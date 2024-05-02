@@ -30,17 +30,6 @@ function App() {
   console.log(location);
   const URL_API = `https://cuaca-gempa-rest-api.vercel.app/weather/${removedSpacesText.toLowerCase()}/kota-${city.toLowerCase()}`;
 
-  // console.log(URL_API);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const date = new Date();
-  //     setCurrentTime(date.toLocaleTimeString());
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   useEffect(() => {
     const locationTract = async () => {
       // Mendapatkan lokasi pengguna menggunakan Geolocation API
@@ -105,41 +94,6 @@ function App() {
   // console.log("ini cc", cc);
   // setCuaca(cc[cc.length - 1]);
   // setCuaca(cc[cc.length - 1]);
-  // ch 0. 12 . 15
-  // time.times.map((e) => {
-  //   console.log("appppppppppppppp", e);
-  // });
-  // const interval = setInterval(() => {
-  //   const date = new Date();
-  //   setCurrentTime(date.toLocaleTimeString("en-US", { hour12: false }));
-  //   try {
-  //     time.times.map((e) => {
-  //       if (e.h < currentTime) {
-  //         setCuaca(e.name);
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // }, 1000);
-  // () => clearInterval(interval);
-
-  // data.params.map((time) => {
-  //   if (time.id === "weather") {
-  //     console.log("pppppppppppppppppppppp", data.time);
-  //   }
-  // });
-  // Panggil fungsi fetchData untuk mendapatkan data dari API
-  // {
-  //   data
-  //     ? data.params[6].times.map((e) => {
-  //         console.log(e);
-  //         if (e.h < currentTime) {
-  //           setCuaca(e.name);
-  //         }
-  //       })
-  //     : console.log("gada");
-  // }
 
   console.log("ini time", time);
   console.log("ini cuaca", cuaca);
@@ -147,55 +101,57 @@ function App() {
 
   // console.log("jam berapa", currentTime);
   return (
-    <div className="mx-auto w-full bg-slate-300 flex flex-col justify-center items-center">
-      {/* <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div> */}
+    <div className="bg-[#1d1d1d] py-8 px-2 text-white w-full flex flex-col min-h-screen">
       {city ? (
-        <p className="bg-slate-50">Anda berada di kota: {city}</p>
+        <p className="mx-auto mb-8">Anda berada di kota : {city}</p>
       ) : (
         <p>Mencari lokasi Anda...</p>
       )}
+      <div className=" w-full text-white flex flex-col md:flex-row justify-center gap-3 md:items-start items-center">
+        <div className="md:w-auto w-full">
+          {data ? (
+            <div className="md:max-w-[300px]  w-full gap-1 rounded-lg mt-2 p-2  flex flex-col items-center md:px-7 bg-[#d0d0d04d]">
+              <h1 className="font-semibold text-3xl">Cuaca</h1>
+              <h2 className="text-xl font-normal">
+                {data.domain + " " + data.description}
+              </h2>
 
-      {data ? (
-        <div className="flex flex-col bg-[#d0d0d0b7]">
-          <h1>Cuaca</h1>
-          <h2 className="text-xl font-normal">
-            {data.domain + " " + data.description}
-          </h2>
-
-          {cuaca ? (
+              {cuaca ? (
+                <>
+                  <div className="my-2">
+                    <Weather cuaca={cuaca.name} />
+                  </div>
+                  <p className="text-xl font-normal ">{cuaca.name}</p>
+                </>
+              ) : (
+                <>Loading...</>
+              )}
+            </div>
+          ) : (
+            <>Loading...</>
+          )}
+        </div>
+        <div className="flex flex-col gap-3 mt-2">
+          {quake ? (
             <>
-              <Weather cuaca={cuaca.name} />
-              <p className="text-xl font-normal ">{cuaca.name}</p>
+              <div className="bg-white text-black p-3 rounded-lg flex justify-center flex-col overflow-hidden">
+                <h1 className="text-3xl font-semibold mx-auto ">Informasi</h1>
+                <img src={quake.shakemap} width={"100%"} alt="" />
+                <span className="font-semibold text-xl px-2">
+                  {quake.wilayah}
+                </span>
+                <h2 className="px-2 text-base">{quake.potensi}</h2>
+                <div className="flex justify-between px-2 mt-2">
+                  <h2>{quake.tanggal}</h2>
+                  <h2>{quake.jam}</h2>
+                </div>
+              </div>
             </>
           ) : (
             <>Loading...</>
           )}
         </div>
-      ) : (
-        <>Loading...</>
-      )}
-      <div className="card">
-        <h1>Gempa</h1>
-        {quake ? (
-          <>
-            <img src={quake.shakemap} width={"100%"} alt="" />
-            <h2>{quake.potensi}</h2>
-            <h2>{quake.tanggal}</h2>
-            <h2>{quake.jam}</h2>
-            <span>{quake.wilayah}</span>
-          </>
-        ) : (
-          <>Loading...</>
-        )}
       </div>
-      <p className="read-the-docs">Rezal Nur Syaifudin</p>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 {
   "name": "cuaca-gempa-fetchApi",
   "private": true,
-  "version": "5.2.10",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,7 @@
     "react-router-dom": "^6.23.0",
     "redux": "^5.0.1",
     "redux-toolkit": "^1.1.2",
+    "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {

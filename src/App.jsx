@@ -179,9 +179,7 @@ function App() {
 
   return (
     <div className="bg-[#1d1d1d] py-8 px-2 text-white w-full flex flex-col min-h-screen">
-      <p className="mx-auto mb-8">
-        Anda berada di kota : {principalSubdivision}
-      </p>
+      <p className="mx-auto mb-8">Anda berada di {principalSubdivision}</p>
 
       {city ? (
         <div className="flex flex-row gap-3 justify-center mb-6 w-full">

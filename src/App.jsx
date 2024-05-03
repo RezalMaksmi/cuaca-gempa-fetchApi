@@ -3,10 +3,10 @@ import "./App.css";
 // import { Await } from "react-router-dom";
 import axios from "axios";
 import Weather from "./components/moleculs/Weather";
+import { dataProvinsi } from "./data";
 
 async function GetLastIndex(times, currentTime) {
   const cc = await times.filter((c) => {
-    console.log("filter ", c);
     return c.h <= currentTime;
   });
 
@@ -19,16 +19,35 @@ function App() {
   const [quake, setquake] = useState(null);
   const [cuaca, setCuaca] = useState({});
   const [time, setTime] = useState([]);
+  const [latitude, setLatitude] = useState("");
+  const [keyword, setKeyword] = useState(null);
   const [currentTime, setCurrentTime] = useState("");
 
   // location
   const [city, setCity] = useState("");
+  const [dataSearchCity, setDataSearchCity] = useState([]);
+  const [description, setDescription] = useState("");
   const [principalSubdivision, setPrincipalSubdivision] = useState("");
   const removedSpacesText = principalSubdivision.split(" ").join("-");
+  // const cityRemoveSplaceText = description.split(" ").join("-");
+  const [provinsi, setProvinsi] = useState("");
+  const removedSpacesProvinsi = provinsi.split(" ").join("-");
 
   console.log("dimana?", city);
-  console.log(location);
-  const URL_API = `https://cuaca-gempa-rest-api.vercel.app/weather/${removedSpacesText.toLowerCase()}/kota-${city.toLowerCase()}`;
+  console.log(description);
+  const pp = city == "Malang" && latitude == -8 ? "kota-" : "kabupaten-";
+
+  const [selectedCity, setSelectedCity] = useState("");
+  const removedSpacesCity = selectedCity.split(" ").join("-");
+  const handleChange = (event) => {
+    setSelectedCity(event.target.value);
+  };
+  // const URL_API = `https://cuaca-gempa-rest-api.vercel.app/weather/${removedSpacesText.toLowerCase()}/${city}`;
+
+  // const newLatitude = latitude.split(".")[0];
+  // console.log("latitud nya adalah", Math.round(latitude));
+  const URL_API = `https://cuaca-gempa-rest-api.vercel.app/weather/${removedSpacesText.toLowerCase()}/${removedSpacesCity}`;
+  console.log("URL nya adalah", URL_API);
 
   useEffect(() => {
     const locationTract = async () => {
@@ -42,11 +61,15 @@ function App() {
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`
           )
             .then((response) => response.json())
+            // .then((response) =>
+            //   console.log("dimana inii ?????????????????", response)
+            // )
 
             .then((data) => {
               // Menetapkan nama kota ke state
               setCity(data.city);
               setPrincipalSubdivision(data.principalSubdivision);
+              setLatitude(data.latitude);
             })
             .catch((error) => console.error("Error fetching city:", error));
         });
@@ -74,6 +97,18 @@ function App() {
     };
     fetchData();
 
+    const fetchCity = async () => {
+      try {
+        const response = await axios.get(
+          `https://cuaca-gempa-rest-api.vercel.app/weather/jawa-timur`
+        );
+        setDataSearchCity(await response.data.data.areas);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchCity();
+
     const fetchQuake = async () => {
       try {
         const response = await axios.get(
@@ -100,10 +135,87 @@ function App() {
   console.log("ini cuaca", quake);
 
   // console.log("jam berapa", currentTime);
+
+  // const searchSpace = (event) => {
+  //   setKeyword(event.target.value);
+  //   console.log(keyword);
+  // };
+
+  // const items = dataSearchCity
+  //   .filter((data) => {
+  //     if (keyword == null) return "";
+  //     else if (
+  //       data.name.toLowerCase().includes(this.state.search.toLowerCase())
+  //     ) {
+  //       return data;
+  //     }
+  //   })
+  //   .map((data) => {
+  //     return (
+  //       <div key={data.id}>
+  //         <ul>{data.description}</ul>
+  //       </div>
+  //     );
+  //   });
+
+  // const filteredData = dataSearchCity.filter((item) => {
+  //   return item.description.includes(keyword);
+  // });
+
+  const filteredData = dataSearchCity.map((item, i) => {
+    return (
+      <option key={i} value={item.description.toLowerCase()}>
+        {item.description}
+      </option>
+    );
+  });
+
+  const showDataProvinsi = dataProvinsi.map((item, i) => {
+    return <option key={i}>{item.nama}</option>;
+  });
+
+  console.log("data search", selectedCity);
+  console.log("data provinsi", dataProvinsi);
+
   return (
     <div className="bg-[#1d1d1d] py-8 px-2 text-white w-full flex flex-col min-h-screen">
+      <p className="mx-auto mb-8">
+        Anda berada di kota : {principalSubdivision}
+      </p>
+
       {city ? (
-        <p className="mx-auto mb-8">Anda berada di kota : {city}</p>
+        <div className="flex flex-row gap-3 justify-center mb-6 w-full">
+          <div className="text-white">
+            <label className="max-w-[400px] w-full block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">
+              Pilih Provinsi
+            </label>
+
+            <select
+              id="provinsi"
+              className="max-w-[400px] bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option selected>Choose a country</option>
+              {dataProvinsi ? showDataProvinsi : <></>}
+            </select>
+          </div>
+
+          <div className="text-white">
+            <label className="max-w-[400px] w-full block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">
+              Pilih Kota / Kabupaten
+            </label>
+
+            <select
+              id="countries"
+              value={selectedCity}
+              onChange={handleChange}
+              className="max-w-[400px] w-full bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option selected>Choose a country</option>
+              {filteredData ? filteredData : <>Loading</>}
+            </select>
+          </div>
+          {/* --------- */}
+        </div>
       ) : (
         <p>Mencari lokasi Anda...</p>
       )}
@@ -113,7 +225,11 @@ function App() {
             <div className="md:max-w-[300px]  w-full gap-1 rounded-lg mt-2 p-2  flex flex-col items-center md:px-7 bg-[#d0d0d04d]">
               <h1 className="font-semibold text-3xl">Cuaca</h1>
               <h2 className="text-xl font-normal">
-                {data.domain + " " + data.description}
+                {data.domain && data.description ? (
+                  data.domain + " " + data.description
+                ) : (
+                  <>Pilih Kota/Kabupaten</>
+                )}
               </h2>
 
               {cuaca ? (
